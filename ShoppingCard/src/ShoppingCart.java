@@ -1,3 +1,4 @@
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -50,24 +51,24 @@ public class ShoppingCart {
 		allItems.clear();
 	}
 	
-	public void addItem(Item item, int count) {
+	public void addItem(Item item, int count) throws Exception {
 		if(count < 1 || item == null) {
 			return;
 		}
-		
+			
 		if(allItems.containsKey(item)) {
 			allItems.put(item, allItems.get(item) + count);
 		} else {
 			allItems.put(item, count);
 		}	
+		
+		if(allItems.get(item) < 0) {
+			throw new Exception();
+		}
 	}
 	
-	@Override
-	public String toString() {		
-		return this.toString("all");
-	}
 	
-	public String toString(String type) {
+	public String toString(String type) throws Exception {
 		String mainHeader = String.format("%-10s|%-30s|%-15s|", "Count", "Name", " Unit price");
 		String productsHeader = String.format("%-30s|%-15s|", "Manifacturer", "Total price");
 		String serviceHeader = String.format("%-15s|%-15s|", "Per mount", "Total price");
@@ -84,16 +85,23 @@ public class ShoppingCart {
 		for(Entry<Item, Integer> entry : allItems.entrySet()) {
 		    Item key = entry.getKey();
 		    
-		    if(key instanceof Product) {
-		    	
+		    double totalPrice = entry.getValue() * entry.getKey().getUnitPrice();
+		    
+		    if(totalPrice < 0) {
+		    	totalPrice = Double.MAX_VALUE;
+		    	//Everything is free beyond the max value ! 
+		    }
+		    
+		    if(key instanceof Product) {	    	
 		    	products.append(String.format("%-10s|", entry.getValue()));	
 			    products.append(key.getItemsForCard());	
-			    products.append(entry.getValue() * entry.getKey().getUnitPrice());	
+			    products.append(new DecimalFormat("#0.00").format(totalPrice));	
 		    } else {
 		    	services.append(String.format("%-10s|", entry.getValue()));	
 		    	services.append(key.getItemsForCard());	
-		    	services.append(entry.getValue() * entry.getKey().getUnitPrice());	
-			}		     
+		    	services.append(new DecimalFormat("#0.00").format(totalPrice));	
+			}	
+		
 		}		
 		
 		switch(type) {

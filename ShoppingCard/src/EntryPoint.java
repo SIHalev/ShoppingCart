@@ -80,8 +80,10 @@ public class EntryPoint {
 //				  showErrorMessage();
 //			    
 		    } catch (Exception e) {
-			  showErrorMessage();
+		    	System.err.println("Something go wrong, restart the program.");
+			   break;
 		    }
+		 
 		} while(!rawInput.equals("exit"));	
 	}
 
@@ -108,7 +110,7 @@ public class EntryPoint {
 	}
 
 	private static void showErrorMessage() {
-		System.out.println("Invalid command !");
+		System.err.println("Invalid command !");
 		System.out.println("Type \"help\" to see all comands");	
 	}
 }
